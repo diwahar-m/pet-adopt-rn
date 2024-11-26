@@ -9,7 +9,9 @@ export default function Index() {
       }}
     >
       <Link href="/login">
-        <Text>Edit app/index.tsx to edit this syycreen.</Text>
+        <Text style={{ fontFamily: "outfit-bold" }}>
+          Edit app/index.tsx to edit this syycreen.
+        </Text>
       </Link>
     </View>
   );
