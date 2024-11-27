@@ -10,10 +10,10 @@ export const useWarmUpBrowser = () => {
     // Warm up the android browser to improve UX
     // https://docs.expo.dev/guides/authentication/#improving-user-experience
     // following warm up and cool down for mobile devices. Desn't work with web.
-    // void WebBrowser.warmUpAsync();
-    // return () => {
-    //   void WebBrowser.coolDownAsync();
-    // };
+    void WebBrowser.warmUpAsync();
+    return () => {
+      void WebBrowser.coolDownAsync();
+    };
   }, []);
 };
 
