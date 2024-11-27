@@ -1,7 +1,44 @@
 import { Text, View, Image, Pressable } from "react-native";
-import Colors from "./../../constants/Color";
+import Colors from "../../constants/Colors";
+import * as WebBrowser from "expo-web-browser";
+import { useOAuth } from "@clerk/clerk-expo";
+import * as Linking from "expo-linking";
+import { useCallback, useEffect } from "react";
+
+export const useWarmUpBrowser = () => {
+  useEffect(() => {
+    // Warm up the android browser to improve UX
+    // https://docs.expo.dev/guides/authentication/#improving-user-experience
+    // following warm up and cool down for mobile devices. Desn't work with web.
+    // void WebBrowser.warmUpAsync();
+    // return () => {
+    //   void WebBrowser.coolDownAsync();
+    // };
+  }, []);
+};
+
+WebBrowser.maybeCompleteAuthSession();
 
 export default function LoginScreen() {
+  useWarmUpBrowser();
+  const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
+
+  const onPress = useCallback(async () => {
+    try {
+      const { createdSessionId, signIn, signUp, setActive } =
+        await startOAuthFlow({
+          redirectUrl: Linking.createURL("/(tabs)/home", { scheme: "myapp" }),
+        });
+
+      if (createdSessionId) {
+      } else {
+        // Use signIn or signUp for next steps such as MFA
+      }
+    } catch (err) {
+      console.error("OAuth error", err);
+    }
+  }, []);
+
   return (
     <View style={{ backgroundColor: Colors.WHITE, height: "100%" }}>
       <Image
@@ -29,6 +66,7 @@ export default function LoginScreen() {
           Let's adopt the pet which you like and make there life happy again
         </Text>
         <Pressable
+          onPress={onPress}
           style={{
             padding: 14,
             marginTop: 100,
