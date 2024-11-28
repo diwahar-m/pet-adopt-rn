@@ -1,12 +1,19 @@
-import { View, Text, FlatList, Image, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import { db } from "../../config/FirebaseConfig";
 import Colors from "../../constants/Colors";
 import { collection, getDocs } from "firebase/firestore";
 
-export default function Category() {
+export default function Category({ category }) {
   const [categoryList, setCategoryList] = useState([]);
-  const [selectedCategory, setselectedCategory] = useState("Dogs");
+  const [selectedCategory, setSelectedCategory] = useState("Dogs");
   useEffect(() => {
     GetCategories();
   }, []);
@@ -29,7 +36,13 @@ export default function Category() {
           data={categoryList}
           numColumns={4}
           renderItem={({ item }) => (
-            <View style={{ flex: 1 }}>
+            <TouchableOpacity
+              onPress={() => {
+                setSelectedCategory(item.name);
+                category(item.name);
+              }}
+              style={{ flex: 1 }}
+            >
               <View
                 style={[
                   styles.container,
@@ -45,7 +58,7 @@ export default function Category() {
               <Text style={{ textAlign: "center", fontFamily: "outfit" }}>
                 {item?.name}
               </Text>
-            </View>
+            </TouchableOpacity>
           )}
         />
       )}
@@ -55,7 +68,7 @@ export default function Category() {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: Colors.PRIMARY,
+    backgroundColor: Colors.LIGHT_PRIMARY,
     padding: 15,
     alignItems: "center",
     borderWidth: 1,
