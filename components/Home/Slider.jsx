@@ -17,12 +17,12 @@ export default function Slider() {
   }, []);
 
   const GetSliders = async () => {
-    setSliderList([]);
+    const sliders = [];
     const snapshot = await getDocs(collection(db, "Sliders"));
     snapshot.forEach((doc) => {
-      console.log(doc.data());
-      setSliderList([...sliderList, doc.data()]);
+      sliders.push(doc.data());
     });
+    setSliderList(sliders);
   };
 
   return (
@@ -32,7 +32,7 @@ export default function Slider() {
         horizontal={true}
         showsHorizontalScrollIndicator={false}
         renderItem={({ item, index }) => (
-          <View>
+          <View key={index}>
             <Image
               source={{ uri: item?.imageUrl }}
               style={styles?.sliderImage}
