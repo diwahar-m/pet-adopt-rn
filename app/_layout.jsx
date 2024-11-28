@@ -29,6 +29,7 @@ const tokenCache = {
 };
 
 export default function RootLayout() {
+  const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
   useFonts({
     outfit: require("./.././assets/fonts/Outfit-Regular.ttf"),
     "outfit-medium": require("./.././assets/fonts/Outfit-Medium.ttf"),
@@ -36,10 +37,7 @@ export default function RootLayout() {
   });
 
   return (
-    <ClerkProvider
-      tokenCache={tokenCache}
-      publishableKey={process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY}
-    >
+    <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
       <ClerkLoaded>
         <Stack>
           <Stack.Screen name="index" />

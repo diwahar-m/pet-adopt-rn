@@ -1,12 +1,8 @@
 import { View, Text, Image } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { useUser } from "@clerk/clerk-expo";
 
 export default function Header() {
-  useEffect(() => {
-    const { user } = useUser();
-    console.log(user);
-  }, []);
   const { user } = useUser();
   console.log(user);
   return (

@@ -27,18 +27,20 @@ export default function LoginScreen() {
     try {
       const { createdSessionId, signIn, signUp, setActive } =
         await startOAuthFlow({
-          redirectUrl: Linking.createURL("/(tabs)/home", { scheme: "myapp" }),
+          redirectUrl: Linking.createURL("/(tabs)/home", {
+            scheme: "myapp",
+          }),
         });
 
       if (createdSessionId) {
-        setActive({ session: createdSessionId });
+        // setActive({ session: createdSessionId });
       } else {
         // Use signIn or signUp for next steps such as MFA
       }
     } catch (err) {
       console.error("OAuth error", err);
     }
-  }, []);
+  }, [startOAuthFlow]);
 
   return (
     <View style={{ backgroundColor: Colors.WHITE, height: "100%" }}>
