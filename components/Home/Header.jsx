@@ -3,7 +3,12 @@ import React from "react";
 import { useUser } from "@clerk/clerk-expo";
 
 export default function Header() {
+  useEffect(() => {
+    const { user } = useUser();
+    console.log(user);
+  }, []);
   const { user } = useUser();
+  console.log(user);
   return (
     <View
       style={{
@@ -14,9 +19,7 @@ export default function Header() {
       }}
     >
       <View>
-        <Text style={{ fontFamily: "outfit", fontSize: 18 }}>
-          Welcome User,
-        </Text>
+        <Text style={{ fontFamily: "outfit", fontSize: 18 }}>Welcome ,</Text>
         <Text style={{ fontFamily: "outfit-medium", fontSize: 25 }}>
           {user?.fullName}
         </Text>
