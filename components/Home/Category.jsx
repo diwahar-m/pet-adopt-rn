@@ -19,7 +19,8 @@ export default function Category({ category }) {
   }, []);
   const GetCategories = async () => {
     const categories = [];
-    const snapshot = await getDocs(collection(db, "Category"));
+    const categoryRef = collection(db, "Category");
+    const snapshot = await getDocs(categoryRef);
     snapshot.forEach((doc) => {
       categories.push(doc.data());
     });
@@ -38,8 +39,8 @@ export default function Category({ category }) {
           renderItem={({ item }) => (
             <TouchableOpacity
               onPress={() => {
-                setSelectedCategory(item.name);
                 category(item.name);
+                setSelectedCategory(item.name);
               }}
               style={{ flex: 1 }}
             >
