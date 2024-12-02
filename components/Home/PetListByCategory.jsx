@@ -7,13 +7,14 @@ import { db } from "../../config/FirebaseConfig";
 
 export default function PetListByCategory() {
   const [petList, setPetList] = useState([]);
+  const [loader, setLoader] = useState(false);
 
   useEffect(() => {
     GetPetList("Dogs");
   }, []);
 
   const GetPetList = async (category) => {
-    console.log(category);
+    setLoader(true);
     const pet_list = [];
     const querySnapshot = await getDocs(
       query(
@@ -27,6 +28,7 @@ export default function PetListByCategory() {
       pet_list.push(doc.data());
     });
     setPetList(pet_list);
+    setLoader(false);
   };
 
   return (
@@ -38,6 +40,8 @@ export default function PetListByCategory() {
       />
       <FlatList
         horizontal={true}
+        refreshing={loader}
+        onRefresh={() => GetPetList("Dogs")}
         style={{ marginTop: 10 }}
         data={petList}
         renderItem={(item) => <PetListItem pet={item} />}
