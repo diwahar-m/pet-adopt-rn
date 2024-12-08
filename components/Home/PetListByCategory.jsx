@@ -1,4 +1,4 @@
-import { View, Text, FlatList } from "react-native";
+import { View, FlatList } from "react-native";
 import React, { useEffect, useState } from "react";
 import Category from "./Category";
 import { collection, getDocs, query, where } from "firebase/firestore";
@@ -24,7 +24,6 @@ export default function PetListByCategory() {
     );
 
     querySnapshot.forEach((doc) => {
-      console.log(doc.data());
       pet_list.push(doc.data());
     });
     setPetList(pet_list);

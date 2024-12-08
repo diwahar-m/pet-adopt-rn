@@ -4,7 +4,6 @@ import { useUser } from "@clerk/clerk-expo";
 
 export default function Header() {
   const { user } = useUser();
-  console.log(user);
   return (
     <View
       style={{

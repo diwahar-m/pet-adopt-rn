@@ -6,10 +6,10 @@ import { useRouter } from "expo-router";
 export default function PetListItem({ pet }) {
   pet = pet?.item;
   //
-  const router = useRouter()
+  const router = useRouter();
   return (
     <TouchableOpacity
-    onPress={()=>  router.push({pathname: '/pet-details', params: pet})}
+      onPress={() => router.push({ pathname: "/pet-details", params: pet })}
       style={{
         padding: 10,
         marginRight: 15,
@@ -53,6 +53,6 @@ export default function PetListItem({ pet }) {
           {pet?.age} YRS
         </Text>
       </View>
-    </TouchableOp>
+    </TouchableOpacity>
   );
 }
