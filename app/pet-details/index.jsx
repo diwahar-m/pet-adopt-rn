@@ -1,8 +1,9 @@
-import { View, Text } from "react-native";
+import { View, Text, ScrollView } from "react-native";
 import React, { useEffect } from "react";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import PetInfo from "../../components/PetDetails/PetInfo";
 import PetSubInfo from "../../components/PetDetails/PetSubInfo";
+import AboutPet from "../../components/PetDetails/AboutPet";
 
 export default function PetDetails() {
   const pet = useLocalSearchParams();
@@ -18,12 +19,15 @@ export default function PetDetails() {
 
   return (
     <View>
-      {/* Pet Info */}
-      <PetInfo pet={pet} />
-      {/* Pet Properties  */}
-      <PetSubInfo pet={pet} />
-      {/* About  */}
-      {/* Owner Details  */}
+      <ScrollView>
+        {/* Pet Info */}
+        <PetInfo pet={pet} />
+        {/* Pet Properties  */}
+        <PetSubInfo pet={pet} />
+        {/* About  */}
+        <AboutPet pet={pet} />
+        {/* Owner Details  */}
+      </ScrollView>
       {/* Adopt Me Button */}
     </View>
   );
