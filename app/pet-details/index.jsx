@@ -57,7 +57,7 @@ export default function PetDetails() {
 }
 
 const styles = StyleSheet.create({
-  bottomContainer: { position: "absolute", bottom: 0 },
+  bottomContainer: { position: "absolute", bottom: 0, width: "100%" },
   adoptBtn: {
     padding: 15,
     backgroundColor: Colors.PRIMARY,
