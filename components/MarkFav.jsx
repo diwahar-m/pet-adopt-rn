@@ -1,9 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { Pressable } from "react-native";
-import Shared from "../Shared/shared";
+import Shared from "../Shared/Shared";
 import { useUser } from "@clerk/clerk-expo";
-const MarkFav = (pet) => {
+const MarkFav = ({ pet }) => {
   const { user } = useUser();
   const [favList, setFavList] = useState();
 
@@ -16,6 +16,13 @@ const MarkFav = (pet) => {
     console.log(results);
     setFavList(results.favorites ? result?.favorites : []);
   };
+
+  const AddToFav = async (user, favorites) => {
+    const favResult = favList;
+    favResult.push(pet.id);
+    await Shared.UpdateFav(user, favResult);
+    GetFav();
+  };
   return (
     <View>
       {favList?.includes(pet.id) ? (
@@ -23,7 +30,7 @@ const MarkFav = (pet) => {
           <Ionicons name="heart-outline" size={30} color="red" />
         </Pressable>
       ) : (
-        <Pressable>
+        <Pressable onPress={() => AddToFav()}>
           <Ionicons name="heart-outline" size={30} color="black" />
         </Pressable>
       )}
