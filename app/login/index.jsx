@@ -1,7 +1,7 @@
 import { Text, View, Image, Pressable } from "react-native";
 import Colors from "../../constants/Colors";
 import * as WebBrowser from "expo-web-browser";
-import { useOAuth } from "@clerk/clerk-expo";
+import { useOAuth, useAuth, useUser } from "@clerk/clerk-expo";
 import * as Linking from "expo-linking";
 import { useCallback, useEffect } from "react";
 
@@ -41,6 +41,16 @@ export default function LoginScreen() {
       console.error("OAuth error", err);
     }
   }, [startOAuthFlow]);
+
+  const { user } = useUser();
+  const { isSignedIn } = useAuth();
+  console.log("prueba", user);
+
+  useEffect(() => {
+    if (user) {
+      router.push("/home");
+    }
+  }, [isSignedIn]);
 
   return (
     <View style={{ backgroundColor: Colors.WHITE, height: "100%" }}>
