@@ -1,4 +1,5 @@
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { db } from "../../config/FirebaseConfig";
 
 const GetFavList = async (user) => {
   const docSnap = await getDoc(
