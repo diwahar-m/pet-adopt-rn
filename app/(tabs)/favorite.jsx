@@ -3,7 +3,7 @@ import React from "react";
 
 export default function Favorite() {
   return (
-    <View>
+    <View style={{ padding: 20 }}>
       <Text>Favorite</Text>
     </View>
   );

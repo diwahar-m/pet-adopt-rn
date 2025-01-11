@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Pressable, View } from "react-native";
 import { useUser } from "@clerk/clerk-expo";
 import Shared from "../Shared/Shared";
-const MarkFav = ({ pet }) => {
+const MarkFav = ({ pet, color = "black" }) => {
   const { user } = useUser();
   const [favList, setFavList] = useState([]);
 
@@ -42,7 +42,7 @@ const MarkFav = ({ pet }) => {
         </Pressable>
       ) : (
         <Pressable onPress={AddToFav}>
-          <Ionicons name="heart-outline" size={30} color="black" />
+          <Ionicons name="heart-outline" size={30} color={color} />
         </Pressable>
       )}
     </View>
