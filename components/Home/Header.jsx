@@ -18,11 +18,11 @@ export default function Header() {
         <Text style={{ fontFamily: "outfit-medium", fontSize: 25 }}>
           {user?.fullName}
         </Text>
-        <Image
-          source={{ uri: user?.imageUrl }}
-          style={{ width: 40, height: 40, borderRadius: 99 }}
-        />
       </View>
+      <Image
+        source={{ uri: user?.imageUrl }}
+        style={{ width: 40, height: 40, borderRadius: 99 }}
+      />
     </View>
   );
 }
