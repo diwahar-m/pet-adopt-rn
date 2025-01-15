@@ -1,6 +1,7 @@
-import { useNavigation } from "expo-router";
+import { useNavigation, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   Image,
   Pressable,
   ScrollView,
@@ -13,12 +14,15 @@ import {
 } from "react-native";
 import Colors from "../../constants/Colors";
 import { Picker } from "@react-native-picker/picker";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, setDoc } from "firebase/firestore";
 import { db, storage } from "../../config/FirebaseConfig";
 import * as ImagePicker from "expo-image-picker";
+import { useUser } from "@clerk/clerk-expo";
 
 export default function AddNewPet() {
   const navigation = useNavigation();
+  const router = useRouter();
+  const user = useUser();
   const [formData, setFormData] = useState({
     category: "Dogs",
     sex: "Male",
@@ -27,6 +31,7 @@ export default function AddNewPet() {
   const [categoryList, setCategoryList] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState();
   const [image, setImage] = useState();
+  const [loader, setLoader] = useState(false);
 
   useEffect(() => {
     navigation.setOptions({
@@ -70,13 +75,36 @@ export default function AddNewPet() {
       ToastAndroid.show("Enter All Details", ToastAndroid.SHORT);
       return;
     }
+
     UploadImage();
   };
 
   const UploadImage = async () => {
+    setLoader(true);
     const res = await fetch(image);
     const blobImage = await res.blob();
-    const storageRef = ref(storage);
+    const { data, error } = await supabase.storage
+      .from("pet-adopt")
+      .upload(`${Date.now()}.jpg`, blobImage);
+    if (data) {
+      SaveFromData(data);
+    } else if (error) {
+      ToastAndroid.show("Something went wrong !", ToastAndroid.SHORT);
+    }
+  };
+
+  const SaveFromData = async (imageUrl) => {
+    const docId = Date.now().toString();
+    await setDoc(doc(db, "Pets", docId), {
+      ...formData,
+      imageUrl: imageUrl,
+      username: user?.fullName,
+      email: user?.primaryEmailAddress?.emailAddress,
+      userImage: user?.imageUrl,
+      id: docId,
+    });
+    setLoader(false);
+    router.replace("/(tabs)/home");
   };
 
   return (
@@ -186,10 +214,18 @@ export default function AddNewPet() {
           onChangeText={(value) => handleInputChange("about", value)}
         />
       </View>
-      <TouchableOpacity style={styles.button} onPress={onSubmit}>
-        <Text style={{ fontFamily: "outfit-medium", textAlign: "center" }}>
-          Submit
-        </Text>
+      <TouchableOpacity
+        disabled={loader}
+        style={styles.button}
+        onPress={onSubmit}
+      >
+        {loader ? (
+          <ActivityIndicator />
+        ) : (
+          <Text style={{ fontFamily: "outfit-medium", textAlign: "center" }}>
+            Submit
+          </Text>
+        )}
       </TouchableOpacity>
     </ScrollView>
   );
