@@ -2,6 +2,7 @@ import { useNavigation } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   Image,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -10,19 +11,58 @@ import {
   View,
 } from "react-native";
 import Colors from "../../constants/Colors";
+import { Picker } from "@react-native-picker/picker";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../../config/FirebaseConfig";
+import * as ImagePicker from "expo-image-picker";
+
 export default function AddNewPet() {
   const navigation = useNavigation();
   const [formData, setFormData] = useState();
+  const [gender, setGender] = useState();
+  const [categoryList, setCategoryList] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState();
+  const [image, setImage] = useState();
 
   useEffect(() => {
     navigation.setOptions({
       headerTitle: "Add New Pet",
     });
+    GetCategories();
   }, []);
+
+  const GetCategories = async () => {
+    const categories = [];
+    const categoryRef = collection(db, "Category");
+    const snapshot = await getDocs(categoryRef);
+    snapshot.forEach((doc) => {
+      categories.push(doc.data());
+    });
+    setCategoryList(categories);
+  };
+
+  const imagePicker = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    console.log(result);
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
 
   const handleInputChange = (fieldName, fieldValue) => {
     console.log(fieldName, fieldValue);
     setFormData((prev) => ({ ...prev, [fieldName]: fieldValue }));
+  };
+
+  const onSubmit = () => {
+    console.log(formData);
   };
 
   return (
@@ -30,22 +70,43 @@ export default function AddNewPet() {
       <Text style={{ fontFamily: "outfit-medium", fontSize: 20 }}>
         Add New Pet for adoption
       </Text>
-      <Image
-        style={{
-          width: 100,
-          height: 100,
-          borderRadius: 15,
-          borderWidth: 1,
-          borderColor: Colors.GRAY,
-        }}
-        source={require("./../../assets/images/login.png")}
-      />
+      <Pressable onPress={imagePicker}>
+        <Image
+          style={{
+            width: 100,
+            height: 100,
+            borderRadius: 15,
+            borderWidth: 1,
+            borderColor: Colors.GRAY,
+          }}
+          source={require("./../../assets/images/login.png")}
+        />
+      </Pressable>
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Pet Name *</Text>
         <TextInput
           style={styles.input}
           onChangeText={(value) => handleInputChange("name", value)}
         />
+      </View>
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>Pet Category *</Text>
+        <Picker
+          selectedValue={selectedCategory}
+          onValueChange={(itemValue, itemIndex) => {
+            setSelectedCategory(itemValue);
+            handleInputChange("category", itemValue);
+          }}
+          style={styles.input}
+        >
+          {categoryList?.map((category, index) => (
+            <Picker.Item
+              key={index}
+              label={category.name}
+              value={category.name}
+            />
+          ))}
+        </Picker>
       </View>
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Breed *</Text>
@@ -60,6 +121,20 @@ export default function AddNewPet() {
           style={styles.input}
           onChangeText={(value) => handleInputChange("age", value)}
         />
+      </View>
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>Gender *</Text>
+        <Picker
+          selectedValue={gender}
+          onValueChange={(itemValue, itemIndex) => {
+            setGender(itemValue);
+            handleInputChange("sex", itemValue);
+          }}
+          style={styles.input}
+        >
+          <Picker.Item label="Male" value="Male" />
+          <Picker.Item label="Female" value="Female" />
+        </Picker>
       </View>
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Weight *</Text>
@@ -84,7 +159,7 @@ export default function AddNewPet() {
           onChangeText={(value) => handleInputChange("about", value)}
         />
       </View>
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={onSubmit}>
         <Text style={{ fontFamily: "outfit-medium", textAlign: "center" }}>
           Submit
         </Text>
@@ -112,5 +187,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.PRIMARY,
     borderRadius: 7,
     marginVertical: 10,
+    marginBottom: 50,
   },
 });
