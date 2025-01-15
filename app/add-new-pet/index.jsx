@@ -7,18 +7,22 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  ToastAndroid,
   TouchableOpacity,
   View,
 } from "react-native";
 import Colors from "../../constants/Colors";
 import { Picker } from "@react-native-picker/picker";
 import { collection, getDocs } from "firebase/firestore";
-import { db } from "../../config/FirebaseConfig";
+import { db, storage } from "../../config/FirebaseConfig";
 import * as ImagePicker from "expo-image-picker";
 
 export default function AddNewPet() {
   const navigation = useNavigation();
-  const [formData, setFormData] = useState();
+  const [formData, setFormData] = useState({
+    category: "Dogs",
+    sex: "Male",
+  });
   const [gender, setGender] = useState();
   const [categoryList, setCategoryList] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState();
@@ -62,7 +66,17 @@ export default function AddNewPet() {
   };
 
   const onSubmit = () => {
-    console.log(formData);
+    if (Object.keys(formData)?.length != 8) {
+      ToastAndroid.show("Enter All Details", ToastAndroid.SHORT);
+      return;
+    }
+    UploadImage();
+  };
+
+  const UploadImage = async () => {
+    const res = await fetch(image);
+    const blobImage = await res.blob();
+    const storageRef = ref(storage);
   };
 
   return (
@@ -71,16 +85,27 @@ export default function AddNewPet() {
         Add New Pet for adoption
       </Text>
       <Pressable onPress={imagePicker}>
-        <Image
-          style={{
-            width: 100,
-            height: 100,
-            borderRadius: 15,
-            borderWidth: 1,
-            borderColor: Colors.GRAY,
-          }}
-          source={require("./../../assets/images/login.png")}
-        />
+        {image ? (
+          <Image
+            style={{
+              width: 100,
+              height: 100,
+              borderRadius: 15,
+            }}
+            source={{ uri: image }}
+          />
+        ) : (
+          <Image
+            style={{
+              width: 100,
+              height: 100,
+              borderRadius: 15,
+              borderWidth: 1,
+              borderColor: Colors.GRAY,
+            }}
+            source={require("./../../assets/images/login.png")}
+          />
+        )}
       </Pressable>
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Pet Name *</Text>
@@ -118,6 +143,7 @@ export default function AddNewPet() {
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Age *</Text>
         <TextInput
+          keyboardType="numeric-pad"
           style={styles.input}
           onChangeText={(value) => handleInputChange("age", value)}
         />
@@ -139,6 +165,7 @@ export default function AddNewPet() {
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Weight *</Text>
         <TextInput
+          keyboardType="numeric-pad"
           style={styles.input}
           onChangeText={(value) => handleInputChange("weight", value)}
         />
