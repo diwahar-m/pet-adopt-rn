@@ -18,6 +18,7 @@ import { collection, getDocs, setDoc } from "firebase/firestore";
 import { db, storage } from "../../config/FirebaseConfig";
 import * as ImagePicker from "expo-image-picker";
 import { useUser } from "@clerk/clerk-expo";
+import * as FileSystem from "expo-file-system";
 
 export default function AddNewPet() {
   const navigation = useNavigation();
@@ -81,15 +82,51 @@ export default function AddNewPet() {
 
   const UploadImage = async () => {
     setLoader(true);
-    const res = await fetch(image);
-    const blobImage = await res.blob();
-    const { data, error } = await supabase.storage
-      .from("pet-adopt")
-      .upload(`${Date.now()}.jpg`, blobImage);
-    if (data) {
-      SaveFromData(data);
-    } else if (error) {
-      ToastAndroid.show("Something went wrong !", ToastAndroid.SHORT);
+    // console.log("ppp");
+    // const res = await fetch(image);
+    // console.log(res);
+    // setLoader(false);
+    // const blobImage = await res.blob();
+    // const { data, error } = await supabase.storage
+    //   .from("pet-adopt")
+    //   .upload(`${Date.now()}.jpg`, blobImage);
+    // console.log(data);
+    // console.log(error);
+    // if (data) {
+    //   SaveFromData(data);
+    // } else if (error) {
+    //   ToastAndroid.show("Something went wrong !", ToastAndroid.SHORT);
+    // }
+
+    try {
+      // Assuming `image` is the URI you obtained from ImagePicker
+      const uri = image;
+
+      // Read the file as a base64 encoded string using expo-file-system
+      const fileInfo = await FileSystem.readAsStringAsync(uri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
+      // Convert base64 string to Blob
+      const byteArray = new Uint8Array(Buffer.from(fileInfo, "base64"));
+      const blobImage = new Blob([byteArray], { type: "image/jpeg" }); // Or 'image/png' based on the image format
+
+      // Upload to Supabase
+      const { data, error } = await supabase.storage
+        .from("pet-adopt")
+        .upload(`${Date.now()}.jpg`, blobImage);
+
+      console.log(data);
+      console.log(error);
+
+      if (data) {
+        SaveFromData(data);
+      } else if (error) {
+        ToastAndroid.show("Something went wrong !", ToastAndroid.SHORT);
+      }
+    } catch (err) {
+      console.error("Error uploading image:", err);
+      ToastAndroid.show("Failed to upload image.", ToastAndroid.SHORT);
     }
   };
 
