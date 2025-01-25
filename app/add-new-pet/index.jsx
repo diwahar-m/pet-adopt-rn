@@ -19,6 +19,7 @@ import { db, storage } from "../../config/FirebaseConfig";
 import * as ImagePicker from "expo-image-picker";
 import { useUser } from "@clerk/clerk-expo";
 import * as FileSystem from "expo-file-system";
+import { supabase } from "../../config/supabaseConfig";
 
 export default function AddNewPet() {
   const navigation = useNavigation();
@@ -62,7 +63,7 @@ export default function AddNewPet() {
     console.log(result);
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      setImage(result.assets[0]);
     }
   };
 
@@ -82,51 +83,35 @@ export default function AddNewPet() {
 
   const UploadImage = async () => {
     setLoader(true);
-    // console.log("ppp");
-    // const res = await fetch(image);
-    // console.log(res);
-    // setLoader(false);
-    // const blobImage = await res.blob();
-    // const { data, error } = await supabase.storage
-    //   .from("pet-adopt")
-    //   .upload(`${Date.now()}.jpg`, blobImage);
-    // console.log(data);
-    // console.log(error);
-    // if (data) {
-    //   SaveFromData(data);
-    // } else if (error) {
-    //   ToastAndroid.show("Something went wrong !", ToastAndroid.SHORT);
-    // }
 
     try {
-      // Assuming `image` is the URI you obtained from ImagePicker
-      const uri = image;
-
-      // Read the file as a base64 encoded string using expo-file-system
-      const fileInfo = await FileSystem.readAsStringAsync(uri, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
-
-      // Convert base64 string to Blob
-      const byteArray = new Uint8Array(Buffer.from(fileInfo, "base64"));
-      const blobImage = new Blob([byteArray], { type: "image/jpeg" }); // Or 'image/png' based on the image format
-
+      // const arrayBuffer = await fetch(uri).then((res) => res.arrayBuffer());
+      const fileExt = image?.uri?.split(".").pop()?.toLowerCase() ?? "jpeg";
+      const path = `${Date.now()}.${fileExt}`;
       // Upload to Supabase
       const { data, error } = await supabase.storage
         .from("pet-adopt")
-        .upload(`${Date.now()}.jpg`, blobImage);
+        .upload(path, image, {
+          cacheControl: "3600",
+          upsert: false,
+        });
 
-      console.log(data);
-      console.log(error);
-
-      if (data) {
-        SaveFromData(data);
-      } else if (error) {
-        ToastAndroid.show("Something went wrong !", ToastAndroid.SHORT);
+      // Check if the upload is successful or failed
+      if (error) {
+        console.error("Error uploading image:", error.message);
+        ToastAndroid.show(
+          "Something went wrong while uploading!",
+          ToastAndroid.SHORT
+        );
+      } else {
+        console.log("Image uploaded successfully:", data);
+        SaveFromData(data); // Save the returned data, such as file URL or metadata
       }
     } catch (err) {
       console.error("Error uploading image:", err);
       ToastAndroid.show("Failed to upload image.", ToastAndroid.SHORT);
+    } finally {
+      setLoader(false); // Hide loader whether success or failure
     }
   };
 
@@ -157,7 +142,7 @@ export default function AddNewPet() {
               height: 100,
               borderRadius: 15,
             }}
-            source={{ uri: image }}
+            source={{ uri: image?.uri }}
           />
         ) : (
           <Image
