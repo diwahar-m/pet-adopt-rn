@@ -81,6 +81,12 @@ export default function AddNewPet() {
     UploadImage();
   };
 
+  const UploadImageToFirebase = async () => {
+    const res = await fetch(image?.uri);
+    const blobImage = await res.blob();
+    const storageRef = ref(storage, "");
+  };
+
   const UploadImage = async () => {
     setLoader(true);
 
@@ -215,7 +221,7 @@ export default function AddNewPet() {
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Weight *</Text>
         <TextInput
-          keyboardType="numeric-pad"
+          keyboardType="number-pad"
           style={styles.input}
           onChangeText={(value) => handleInputChange("weight", value)}
         />
@@ -242,7 +248,7 @@ export default function AddNewPet() {
         onPress={onSubmit}
       >
         {loader ? (
-          <ActivityIndicator />
+          <ActivityIndicator size={"large"} />
         ) : (
           <Text style={{ fontFamily: "outfit-medium", textAlign: "center" }}>
             Submit
